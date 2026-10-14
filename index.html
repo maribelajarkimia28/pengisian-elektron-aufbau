@@ -32,7 +32,7 @@ button:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px sol
 @keyframes drop{0%{transform:translateY(-80px) scale(2.2);opacity:0}60%{opacity:1}100%{transform:none}}
 .shake{animation:shake .5s;border-color:var(--bad)}
 @keyframes shake{20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
-.ghost{position:absolute;top:70px;left:calc(50% - 140px);color:var(--bad);font-size:46px;text-shadow:0 0 12px var(--bad);animation:bn 1.4s forwards}
+.ghost{position:absolute;top:-48px;left:50%;margin-left:-14px;color:var(--bad);font-size:40px;text-shadow:0 0 12px var(--bad);animation:bn2 1.4s forwards}@keyframes bn2{0%{transform:translateY(-30px);opacity:0}25%{opacity:1}55%{transform:translateY(30px)}100%{transform:translateY(-30px);opacity:0}}
 @keyframes bn{0%{transform:translateX(-20px);opacity:0}25%{opacity:1}55%{transform:translateX(105px)}100%{transform:translateX(-30px);opacity:0}}
 .ct{font-size:12px;color:#8FA3D3;width:38px}.cap{font-size:13px;color:#9FB2DD;text-align:center}
 .qn{border-collapse:collapse;font-size:14px;color:#fff}.qn td,.qn th{padding:4px 12px;text-align:center;border-bottom:1px solid #ffffff22}.qn th{color:#9FB2DD;font-weight:600}.qn .x td{color:#FF8A8F;text-decoration:line-through}.qn b{color:#7EF0C9}
@@ -59,6 +59,9 @@ textarea{width:100%;min-height:80px;margin-top:8px;border-radius:12px;border:1.5
 .ar{fill:none;stroke:#7EF0C9;stroke-width:3;stroke-linecap:round;stroke-dasharray:1;opacity:.9}.ar.now{stroke-dashoffset:1;animation:dr 1.6s .1s forwards}@keyframes dr{to{stroke-dashoffset:0}}
 .hd{fill:#7EF0C9}.hd.now{animation:fi .01s 1.7s backwards}@keyframes fi{from{opacity:0}}
 .pop{transform-box:fill-box;transform-origin:center;animation:pp .9s}@keyframes pp{0%{transform:scale(.8)}}
+.ob.big.m{width:62px;height:76px}.ob.big.m .e{font-size:36px}.ob.big.q{width:46px;height:62px}.ob.big.q .e{font-size:26px}.ob.sel{outline:3px solid #ffffff66;outline-offset:3px}
+.mat{max-width:820px}.mat .lead{font-size:17px}.mat .cfg{margin:10px 0;font-size:16px}.tw{overflow-x:auto}.tb{width:100%;border-collapse:collapse;font-size:15px;margin:8px 0}.tb th,.tb td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left}.tb th{color:var(--mut);font-size:13px}
+details{margin:6px 0 12px}summary{cursor:pointer;font-weight:700;color:var(--s)}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01s!important}}
 </style></head><body><div class="wrap">
 <header><div><h1>Konfigurasi Elektron</h1><p class="sub">Aufbau, Hund, dan Pauli: lihat, dengar, coba sendiri, lalu pahami.</p></div><div class="hr"><div id="tools" class="tools"></div><nav id="nav"></nav></div></header>
@@ -69,10 +72,10 @@ const EL='H He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co
 const SH='1s 2s 2p 3s 3p 4s 3d 4p 5s 4d 5p'.split(' ').map(x=>{const n=+x[0],t=x[1],l='spdf'.indexOf(t),o=2*l+1;return{x,n,t,l,o,cap:2*o}});
 const occ=n=>SH.map(h=>{const c=Math.min(h.cap,n);n-=c;return c});
 const shellOf=n=>{let i=0;while(n>SH[i].cap){n-=SH[i].cap;i++}return i};
-const TABS=[['diagram','1 Diagram'],['aufbau','2 Aufbau'],['hund','3 Hund'],['pauli','4 Pauli'],['latihan','5 Latihan'],['refleksi','6 Refleksi']];
+const TABS=[['materi','1 Materi'],['diagram','2 Diagram'],['aufbau','3 Aufbau'],['hund','4 Hund'],['pauli','5 Pauli'],['latihan','6 Latihan'],['refleksi','7 Refleksi']];
 const newH=t=>({t,bx:Array.from({length:t=='p'?3:5},()=>[]),hist:[],msg:null,last:null,shake:null});
-const newP=()=>({bx:[],ghost:null,msg:null,sc:0});
-const S={tab:'diagram',spd:2600,timer:null,voice:false,said:'',vs:false,vo:{name:'',rate:.95,pitch:1},d:{k:0},a:{n:0,tgt:20},h:newH('p'),p:newP(),q:{},r:{}};
+const newP=(t='s')=>({t,bx:Array.from({length:{s:1,p:3,d:5,f:7}[t]},()=>[]),sel:0,ghost:null,msg:null,last:null,sc:0});
+const S={tab:'materi',spd:2600,timer:null,voice:false,said:'',vs:false,vo:{name:'',rate:.95,pitch:1},d:{k:0},a:{n:0,tgt:20},h:newH('p'),p:newP(),q:{},r:{}};
 const el=(s,nw)=>`<i class="e${nw?' new':''}">${s=='u'?'↑':'↓'}</i>`;
 const boxesFor=(c,o,nw)=>Array.from({length:o},(_,b)=>{let h='';for(let i=0;i<c;i++)if((i<o?i:i-o)==b)h+=el(i<o?'u':'d',nw&&i==c-1);return`<div class="ob">${h}</div>`}).join('');
 const SPD=()=>`<select class="btn" data-c="spd" aria-label="Kecepatan">${[[2600,'Pelan'],[1500,'Sedang'],[800,'Cepat']].map(([v,l])=>`<option value="${v}"${S.spd==v?' selected':''}>${l}</option>`).join('')}</select>`;
@@ -136,21 +139,48 @@ render()}
 function hAuto(){const b=S.h.bx;let i=b.findIndex(x=>!x.length);if(i<0)i=b.findIndex(x=>x.length==1);if(i<0)return false;hClick(i);return b.flat().length<b.length*2}
 
 /* ---------- PAULI ---------- */
-const MS={u:'+½',d:'−½'};
-function vP(){const P=S.p;return`${P.ghost?`<i class="e ghost">${P.ghost=='u'?'↑':'↓'}</i>`:''}<div class="ob big${P.ghost?' shake':''}" style="--c:var(--s);margin-top:50px">${P.bx.map((s,k)=>el(s,k==P.bx.length-1&&!P.ghost)).join('')}</div><div class="cap">Satu orbital 1s</div><table class="qn"><tr><th></th><th>n</th><th>ℓ</th><th>mℓ</th><th>ms</th></tr>${P.bx.map((s,k)=>`<tr><td>e⁻ ${k+1}</td><td>1</td><td>0</td><td>0</td><td><b>${MS[s]}</b></td></tr>`).join('')}${P.ghost?`<tr class="x"><td>e⁻ ${P.bx.length+1}</td><td>1</td><td>0</td><td>0</td><td>${MS[P.ghost]}</td></tr>`:''}</table>`}
-function cP(){return`<button class="btn" data-a="reset">⟲ Ulang</button><button class="btn" data-a="sp" data-v="u">+ elektron ↑</button><button class="btn" data-a="sp" data-v="d">+ elektron ↓</button>${PLAY('Putar demo')}${SPD()}`}
-function tP(){const P=S.p,k=P.bx.length;let b='<h2>Larangan Pauli</h2>';
-if(!k&&!P.msg)b+=`<p>Dalam satu atom, <b>tidak boleh ada dua elektron</b> dengan keempat bilangan kuantum (n, ℓ, mℓ, ms) yang sama.</p><div class="note">Akibatnya, satu orbital hanya muat <b>2 elektron</b>, dan keduanya harus berspin <b>berlawanan</b> (↑↓).</div><p>Tekan <b>⏵ Putar demo</b> untuk skenario terpandu, atau coba tombol ↑ dan ↓ sendiri.</p>`;
+const MS={u:'+½',d:'−½'},PN={s:1,p:2,d:3,f:4},PO={s:1,p:3,d:5,f:7};
+const pm=(t,i)=>{const m=i-'spdf'.indexOf(t);return m>0?'+'+m:m<0?'−'+(-m):'0'};
+function pScript(){const s=[[0,'u'],[0,'u'],[0,'d'],[0,'u']];if(PO[S.p.t]>1)s.push([1,'u'],[1,'d']);return s}
+function vP(){const P=S.p,t=P.t,o=P.bx.length,l='spdf'.indexOf(t),n=PN[t],cl=o<=3?'':o==5?' m':' q',rows=[];
+P.bx.forEach((b,i)=>b.forEach(s=>rows.push([i,s])));
+return`<div class="bx" style="gap:10px;margin-top:46px">${P.bx.map((b,i)=>`<div style="text-align:center;position:relative">${P.ghost&&P.sel==i?`<i class="e ghost">${P.ghost=='u'?'↑':'↓'}</i>`:''}<div class="ob big${cl}${P.sel==i?' sel':''}${P.ghost&&P.sel==i?' shake':''}" role="button" tabindex="0" aria-label="Orbital ${i+1}" data-a="pb" data-v="${i}" style="--c:var(--${t})">${b.map((s,k)=>el(s,P.last&&P.last[0]==i&&P.last[1]==k)).join('')}</div><div class="cap">mℓ = ${pm(t,i)}</div></div>`).join('')}</div><div class="cap">Subkulit ${n}${t}: ${o} orbital. Klik kotak untuk memilih orbital, lalu tekan ↑ atau ↓.</div><div style="max-height:190px;overflow:auto"><table class="qn"><tr><th></th><th>n</th><th>ℓ</th><th>mℓ</th><th>ms</th></tr>${rows.map(([i,s],k)=>`<tr><td>e⁻ ${k+1}</td><td>${n}</td><td>${l}</td><td>${pm(t,i)}</td><td><b>${MS[s]}</b></td></tr>`).join('')}${P.ghost?`<tr class="x"><td>e⁻ ${rows.length+1}</td><td>${n}</td><td>${l}</td><td>${pm(t,P.sel)}</td><td>${MS[P.ghost]}</td></tr>`:''}</table></div>`}
+function cP(){const t=S.p.t;return`<button class="btn" data-a="reset">⟲ Ulang</button><button class="btn" data-a="sp" data-v="u">+ elektron ↑</button><button class="btn" data-a="sp" data-v="d">+ elektron ↓</button>${PLAY('Putar demo')}${SPD()}<label class="lab">Subkulit <select class="btn" data-c="pt">${[['s','s (1 orbital)'],['p','p (3 orbital)'],['d','d (5 orbital)'],['f','f (7 orbital)']].map(([v,l])=>`<option value="${v}"${t==v?' selected':''}>${l}</option>`).join('')}</select></label>`}
+function tP(){const P=S.p,t=P.t,n=PN[t],o=P.bx.length,k=P.bx.flat().length,full=P.bx.filter(x=>x.length==2).length;let b='<h2>Larangan Pauli</h2>';
+if(!k&&!P.msg)b+=`<p>Dalam satu atom, <b>tidak boleh ada dua elektron</b> dengan keempat bilangan kuantum (n, ℓ, mℓ, ms) yang sama.</p><div class="note">Akibatnya, satu orbital hanya muat <b>2 elektron</b>, dan keduanya harus berspin <b>berlawanan</b> (↑↓).</div><p>Kamu sedang melihat subkulit <b>${n}${t}</b>: ${o} orbital, kapasitas ${2*o} elektron. Pilih orbital dengan mengklik kotak, lalu tambahkan elektron ↑ atau ↓. Atau tekan <b>⏵ Putar demo</b> untuk skenario terpandu.</p>`;
 if(P.msg)b+=`<div class="note err"><b>Ditolak!</b> ${P.msg}</div><p>Lihat baris merah pada tabel: keempat bilangan kuantumnya kembar dengan elektron lain.</p>`;
-else if(k==1)b+=`<p>Elektron pertama masuk: n = 1, ℓ = 0, mℓ = 0, ms = ${MS[P.bx[0]]}. Belum ada masalah.</p>`;
-else if(k==2)b+=`<div class="note ok">Elektron kedua masuk dengan spin <b>berlawanan</b> (ms = ${MS[P.bx[1]]}). Ada satu bilangan kuantum yang berbeda, jadi diizinkan.</div><p>Orbital ini sekarang penuh.</p>`;
-if(k==2)b+=`<h3>Kesimpulan</h3><p>Orbital s (1 orbital) menampung 2 elektron, p (3 orbital) 6 elektron, d (5 orbital) 10 elektron, f (7 orbital) 14 elektron.</p>`;
+else if(P.last){const[i,j]=P.last,s=P.bx[i][j];b+=j==0?`<p>Elektron masuk ke orbital ke-${i+1} (mℓ = ${pm(t,i)}) dengan ms = ${MS[s]}. Orbital ini baru berisi satu elektron, jadi masih ada tempat.</p>`:`<div class="note ok">Elektron kedua masuk ke orbital ke-${i+1} dengan spin <b>berlawanan</b> (ms = ${MS[s]}). Ada satu bilangan kuantum yang berbeda, jadi diizinkan. Orbital ini sekarang penuh.</div>`}
+if(k){b+=`<h3>Ringkasan</h3><p>Orbital penuh: <b>${full}</b> dari ${o}. Elektron: <b>${k}</b> dari maksimum ${2*o}.</p>`;
+if(o>1&&P.bx.some(x=>x.length==2)&&P.bx.some(x=>!x.length))b+=`<div class="note">Demo ini hanya menguji larangan Pauli, sehingga dua elektron boleh ditaruh di satu orbital walau orbital lain kosong. Cara pengisian yang benar diatur aturan Hund (lihat tab Hund).</div>`;
+if(full==o)b+=`<div class="note ok">Subkulit ${n}${t} penuh: ${2*o} elektron. Setiap orbital berisi pasangan ↑↓.</div>`;
+b+=`<p>Kapasitas subkulit: s = 2, p = 6, d = 10, f = 14 elektron.</p>`}
 return b}
-function pClick(s){const P=S.p,b=P.bx;P.ghost=null;P.msg=null;
-if(b.length==2){P.ghost=s;P.msg='Orbital sudah berisi dua elektron (↑↓). Elektron ke-3 harus pindah ke orbital lain yang energinya lebih tinggi.'}
-else if(b[0]==s){P.ghost=s;P.msg='Spin sama dengan elektron pertama, sehingga n, ℓ, mℓ, dan ms sama semua.'}
-else b.push(s);render()}
-function pAuto(){const P=S.p,sc=['u','u','d','u'];if(P.sc>=4)return false;pClick(sc[P.sc++]);return P.sc<4}
+function pClick(s,i){const P=S.p;if(i!=null)P.sel=i;i=P.sel;const b=P.bx[i],lab=`ke-${i+1} (mℓ = ${pm(P.t,i)})`;P.ghost=null;P.msg=null;P.last=null;
+if(b.length==2){P.ghost=s;P.msg=`Orbital ${lab} sudah berisi dua elektron (↑↓). Elektron ketiga harus pindah ke orbital lain.`}
+else if(b[0]==s){P.ghost=s;P.msg=`Spin sama dengan elektron yang sudah ada di orbital ${lab}, sehingga n, ℓ, mℓ, dan ms sama semua.`}
+else{b.push(s);P.last=[i,b.length-1]}
+render()}
+function pAuto(){const P=S.p,sc=pScript();if(P.sc>=sc.length)return false;const[i,s]=sc[P.sc++];pClick(s,i);return P.sc<sc.length}
+
+/* ---------- MATERI ---------- */
+function vM(){return`<div class="mat">
+<div class="card"><h2>Materi: Konfigurasi Elektron</h2><p class="lead">Baca secara aktif: tandai kata kunci, lalu jawab pertanyaan literasi di bagian akhir. Waktu baca sekitar 6–8 menit.</p><div class="note"><b>Tujuan belajar.</b> Setelah membaca, kamu dapat (1) menyusun konfigurasi elektron dengan urutan Aufbau, (2) menerapkan aturan Hund, dan (3) menjelaskan larangan Pauli.</div></div>
+<div class="card"><h2>1. Elektron di dalam atom</h2><p>Elektron tidak bergerak sembarangan. Ia menempati <b>kulit</b> (n = 1, 2, 3, …). Setiap kulit terbagi menjadi <b>subkulit</b> (s, p, d, f), dan setiap subkulit terdiri atas <b>orbital</b>, yaitu daerah dengan peluang terbesar menemukan elektron. Susunan elektron ini disebut <b>konfigurasi elektron</b>. Konfigurasi menentukan letak unsur dalam tabel periodik dan sifat kimianya, misalnya cara atom membentuk ikatan.</p>
+<div class="tw"><table class="tb"><tr><th>Subkulit</th><th>Jumlah orbital</th><th>Elektron maksimum</th><th>Contoh</th></tr><tr><td>s</td><td>1</td><td>2</td><td>1s, 2s</td></tr><tr><td>p</td><td>3</td><td>6</td><td>2p, 3p</td></tr><tr><td>d</td><td>5</td><td>10</td><td>3d, 4d</td></tr><tr><td>f</td><td>7</td><td>14</td><td>4f, 5f</td></tr></table></div>
+<p>Kulit ke-n memiliki n subkulit: kulit 1 hanya s, kulit 2 punya s dan p, kulit 3 punya s, p, dan d, dan seterusnya. Setiap elektron punya "alamat" berupa empat <b>bilangan kuantum</b>: n (kulit), ℓ (subkulit: 0 = s, 1 = p, 2 = d, 3 = f), mℓ (orbital, dari −ℓ sampai +ℓ), dan ms (spin, +½ atau −½, digambarkan ↑ dan ↓).</p></div>
+<div class="card"><h2>2. Asas Aufbau: isi dari energi terendah</h2><p><b>Aufbau</b> berarti "membangun" (bahasa Jerman). Elektron mengisi subkulit berenergi paling rendah lebih dulu. Urutan energi ditentukan oleh nilai <b>n + ℓ</b>; jika nilainya sama, subkulit dengan n lebih kecil terisi lebih dulu.</p>
+<div class="cfg">1s 2s 2p 3s 3p 4s 3d 4p 5s 4d 5p 6s 4f 5d 6p 7s 5f 6d 7p</div>
+<p>Urutan ini tidak perlu dihafal: gunakan <b>diagram coret miring</b>. Contoh Ca (Z = 20): 1s² 2s² 2p⁶ 3s² 3p⁶ 4s². Perhatikan bahwa 4s (n + ℓ = 4) terisi <b>sebelum</b> 3d (n + ℓ = 5).</p><p>${'<button class="opt" style="width:auto" data-a="tab" data-v="diagram">Lihat diagram coret miring</button> <button class="opt" style="width:auto" data-a="tab" data-v="aufbau">Lihat animasi Aufbau</button>'}</p></div>
+<div class="card"><h2>3. Aturan Hund: menyebar dulu, berpasangan kemudian</h2><p>Orbital dalam satu subkulit memiliki energi yang sama. Elektron mengisi orbital-orbital itu <b>satu per satu</b> dengan spin searah (↑) lebih dulu. Elektron baru berpasangan (↓) setelah semua orbital terisi satu elektron. Alasannya, dua elektron dalam satu orbital saling tolak lebih kuat, sehingga penyebaran membuat atom lebih stabil.</p><p>Analogi: penumpang bus yang duduk di kursi berpasangan biasanya mengisi kursi kosong dulu sebelum duduk bersebelahan. Contoh nitrogen (2p³): ↑ | ↑ | ↑, bukan ↑↓ | ↑ | –.</p><p><button class="opt" style="width:auto" data-a="tab" data-v="hund">Lihat animasi Hund</button></p></div>
+<div class="card"><h2>4. Larangan Pauli: satu orbital, dua elektron berlawanan</h2><p>Tidak ada dua elektron dalam satu atom yang memiliki keempat bilangan kuantum sama. Dua elektron dalam satu orbital sudah sama pada n, ℓ, dan mℓ, sehingga hanya <b>spin</b> yang boleh berbeda. Karena spin hanya punya dua nilai, satu orbital maksimum berisi <b>2 elektron</b> berspin berlawanan (↑↓). Itulah asal kapasitas s = 2, p = 6, d = 10, dan f = 14.</p><p><button class="opt" style="width:auto" data-a="tab" data-v="pauli">Lihat animasi Pauli</button></p></div>
+<div class="card"><h2>5. Contoh lengkap: besi (Fe, Z = 26)</h2><p>Dengan urutan Aufbau: 1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d⁶, atau ditulis singkat [Ar] 4s² 3d⁶. Pada 3d⁶ ada lima orbital: aturan Hund memberi satu ↑ pada tiap orbital, elektron keenam berpasangan (↓) dengan larangan Pauli. Hasilnya 4 elektron tak berpasangan, yang membuat atom besi tertarik oleh medan magnet (bersifat paramagnetik).</p><div class="note">Catatan: Cr (Z = 24) dan Cu (Z = 29) adalah pengecualian: [Ar] 3d⁵ 4s¹ dan [Ar] 3d¹⁰ 4s¹, karena subkulit setengah penuh atau penuh lebih stabil.</div></div>
+<div class="card"><h2>Ringkasan tiga aturan</h2><div class="tw"><table class="tb"><tr><th>Aturan</th><th>Intinya</th><th>Kata kunci</th></tr><tr><td>Aufbau</td><td>Isi subkulit dari energi terendah</td><td>n + ℓ</td></tr><tr><td>Hund</td><td>Orbital setingkat diisi satu-satu dulu, spin searah</td><td>menyebar</td></tr><tr><td>Pauli</td><td>Satu orbital maksimum 2 elektron, spin berlawanan</td><td>↑↓</td></tr></table></div>
+<h3>Istilah penting</h3><p><b>Degenerat</b>: orbital dengan energi sama. <b>Spin</b>: sifat elektron yang bernilai +½ atau −½. <b>Elektron tak berpasangan</b>: elektron yang sendirian dalam orbital. <b>Konfigurasi gas mulia</b>: penulisan singkat memakai lambang gas mulia, misalnya [Ne] atau [Ar].</p></div>
+<div class="card"><h2>Cek literasi</h2><p>Jawab dengan kalimatmu sendiri sebelum membuka contoh jawaban.</p>
+<p><b>1.</b> Apa ide pokok bagian "Asas Aufbau"?</p><details><summary>Contoh jawaban</summary><p>Elektron mengisi subkulit dari energi terendah, dan urutan energinya ditentukan oleh n + ℓ.</p></details>
+<p><b>2.</b> Jelaskan perbedaan aturan Hund dan larangan Pauli dalam satu kalimat.</p><details><summary>Contoh jawaban</summary><p>Hund mengatur cara elektron menyebar ke orbital setingkat (satu-satu dulu), sedangkan Pauli membatasi isi satu orbital maksimum 2 elektron berspin berlawanan.</p></details>
+<p><b>3.</b> Mengapa 4s terisi sebelum 3d, padahal 3 lebih kecil dari 4?</p><details><summary>Contoh jawaban</summary><p>Energi ditentukan oleh n + ℓ, bukan n saja. 4s bernilai 4 + 0 = 4, sedangkan 3d bernilai 3 + 2 = 5, sehingga 4s berenergi lebih rendah.</p></details>
+<p style="margin-top:14px"><button class="opt" style="width:auto" data-a="tab" data-v="latihan">Lanjut ke latihan soal</button></p></div></div>`}
 
 /* ---------- LATIHAN ---------- */
 const QS=[
@@ -178,8 +208,8 @@ function render(){
 $('#nav').innerHTML=TABS.map(([k,l])=>`<button class="${S.tab==k?'on':''}" data-a="tab" data-v="${k}">${l}</button>`).join('');
 const t=S.tab,V=$('#view');
 $('#tools').innerHTML=`<button class="tool" data-a="voice" aria-pressed="${S.voice}">${S.voice?'🔊 Suara: nyala':'🔈 Suara: mati'}</button><button class="tool" data-a="fs">⛶ ${document.fullscreenElement||document.documentElement.classList.contains('wide')?'Keluar layar penuh':'Layar penuh'}</button><button class="tool" data-a="vset" aria-pressed="${S.vs}">⚙ Pengaturan suara</button><span id="vh"></span>${S.vs?vPanel():''}`;
-if(t=='latihan'||t=='refleksi'){V.innerHTML=t=='latihan'?vQ():vR();S.said='';window.speechSynthesis&&speechSynthesis.cancel();return}
-const m={diagram:['Diagram urutan energi',vD,cD,tD,`panah ${S.d.k}/8`],aufbau:['Animasi pengisian Aufbau',vA,cA,tA,`Z = ${S.a.n} ${S.a.n?EL[S.a.n-1]:''}`],hund:['Animasi aturan Hund',vH,cH,tH,`${S.h.bx.flat().length} elektron`],pauli:['Animasi larangan Pauli',vP,cP,tP,`${S.p.bx.length} elektron`]}[t];
+if(t=='latihan'||t=='refleksi'||t=='materi'){V.innerHTML=t=='latihan'?vQ():t=='materi'?vM():vR();S.said='';window.speechSynthesis&&speechSynthesis.cancel();return}
+const m={diagram:['Diagram urutan energi',vD,cD,tD,`panah ${S.d.k}/8`],aufbau:['Animasi pengisian Aufbau',vA,cA,tA,`Z = ${S.a.n} ${S.a.n?EL[S.a.n-1]:''}`],hund:['Animasi aturan Hund',vH,cH,tH,`${S.h.bx.flat().length} elektron`],pauli:['Animasi larangan Pauli',vP,cP,tP,`${S.p.bx.flat().length} elektron`]}[t];
 V.innerHTML=`<div class="grid"><section class="stage" aria-label="Animasi"><div class="sh"><span>${m[0]}</span><span class="badge">${m[4]}</span></div><div class="cv">${m[1]()}</div><div class="ctrl">${m[2]()}</div></section><section class="txt" aria-live="polite">${m[3]()}</section></div>`;say()}
 function stop(keep){clearTimeout(S.timer);S.timer=null;if(!keep&&window.speechSynthesis)speechSynthesis.cancel()}
 function tick(){if({diagram:dStep,aufbau:aStep,hund:hAuto,pauli:pAuto}[S.tab]()===false){stop(true);render()}}
@@ -195,7 +225,7 @@ if(t===S.said)return;S.said=t;ss.cancel();const u=new SpeechSynthesisUtterance(t
 function aStep(){const a=S.a;if(a.n<54)a.n++;render();return a.n<a.tgt&&a.n<54}
 const act={
 tab(v){stop();S.tab=v;render();scrollTo(0,0)},
-reset(){stop();if(S.tab=='diagram')S.d.k=0;if(S.tab=='aufbau')S.a.n=0;if(S.tab=='hund')S.h=newH(S.h.t);if(S.tab=='pauli')S.p=newP();render()},
+reset(){stop();if(S.tab=='diagram')S.d.k=0;if(S.tab=='aufbau')S.a.n=0;if(S.tab=='hund')S.h=newH(S.h.t);if(S.tab=='pauli')S.p=newP(S.p.t);render()},
 back(){stop();if(S.tab=='diagram'){if(S.d.k>0)S.d.k--}else if(S.a.n>0)S.a.n--;render()},
 next(){stop();S.tab=='diagram'?dStep():aStep()},
 vset(){S.vs=!S.vs;render()},
@@ -207,17 +237,17 @@ play(){if(S.timer)return stop(),render();
 if(S.tab=='diagram'&&S.d.k>=8)S.d.k=0;
 if(S.tab=='aufbau'&&S.a.n>=S.a.tgt)S.a.n=0;
 if(S.tab=='hund'&&S.h.bx.flat().length>=S.h.bx.length*2)S.h=newH(S.h.t);
-if(S.tab=='pauli'&&S.p.sc>=4)S.p=newP();
+if(S.tab=='pauli'&&S.p.sc>=pScript().length)S.p=newP(S.p.t);
 S.timer=true;tick();if(S.timer)loop()},
-hb(v){stop();hClick(+v)},sp(v){stop();pClick(v)},
+hb(v){stop();hClick(+v)},pb(v){stop();const P=S.p;P.sel=+v;P.ghost=null;P.msg=null;render()},sp(v){stop();pClick(v)},
 ans(v){const[i,j]=v.split(',');S.q[i]=+j;render()},qreset(){S.q={};render();scrollTo(0,0)},
 conf(v,b){S.r[b.dataset.t]=+v;b.parentNode.querySelectorAll('.opt').forEach(x=>x.classList.toggle('on',x==b))},
 fin(){const need=RT.filter(([k])=>S.r[k]!==0);$('#rmsg').innerHTML=need.length?`<div class="note"><b>Saran:</b> ulangi animasi untuk topik yang belum mantap, lalu kerjakan kembali latihan.<div class="seg" style="margin-top:8px">${need.map(([k,l])=>`<button class="opt" data-a="tab" data-v="${k}">Ulangi ${l}</button>`).join('')}</div></div>`:`<div class="note ok"><b>Luar biasa!</b> Coba jelaskan ketiga aturan ini kepada temanmu. Mengajarkan adalah cara terbaik untuk menguatkan pemahaman.</div>`}};
 document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b&&act[b.dataset.a])act[b.dataset.a](b.dataset.v,b)});
-document.addEventListener('keydown',e=>{if((e.key=='Enter'||e.key==' ')&&e.target.dataset&&e.target.dataset.a=='hb'){e.preventDefault();e.target.click()}});
+document.addEventListener('keydown',e=>{if((e.key=='Enter'||e.key==' ')&&e.target.dataset&&['hb','pb'].includes(e.target.dataset.a)){e.preventDefault();e.target.click()}});
 document.addEventListener('change',e=>{const c=e.target.dataset.c;if(!c)return;const v=e.target.value;
 if(c=='spd'){S.spd=+v;if(S.timer){clearTimeout(S.timer);loop()}}
-if(c=='tgt')S.a.tgt=+v;if(c=='ht'){stop();S.h=newH(v)}
+if(c=='tgt')S.a.tgt=+v;if(c=='ht'){stop();S.h=newH(v)}if(c=='pt'){stop();S.p=newP(v)}
 if(c=='vname'){S.vo.name=v;act.vtest()}if(c=='vrate'){S.vo.rate=+v;act.vtest()}if(c=='vpitch'){S.vo.pitch=+v;act.vtest()}render()});
 document.addEventListener('fullscreenchange',render);
 if(window.speechSynthesis)speechSynthesis.onvoiceschanged=()=>{if(S.vs)render()};
